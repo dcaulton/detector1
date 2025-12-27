@@ -35,8 +35,8 @@ spec:
             nvidia.com/gpu: "1"  # Optional GPU request
         volumeMounts:
         - mountPath: /data
-          name: data-volume  # For 8TB caches
+          name: experiment-data
       volumes:
-      - name: data-volume
-        persistentVolumeClaim:
-          claimName: experiment-data-pvc  # Create PVC on 8TB
+        - name: experiment-data
+          persistentVolumeClaim:
+            claimName: detection-experiments-pvc
