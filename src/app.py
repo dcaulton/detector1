@@ -7,7 +7,7 @@ load_dotenv()  # Loads .env in dev
 # Then os.getenv("MQTT_PASSWORD") etc.
 # In k8s, these come from Secrets instead
 
-mlflow.set_tracking_uri("http://mlflow-service:5000")  # Your k8s MLflow
+mlflow.set_tracking_uri("http://mlflow-service.mlflow.svc.cluster.local:5000")  # Your k8s MLflow
 mlflow.set_experiment("detection-experiments")
 
 def on_message(client, userdata, msg):
