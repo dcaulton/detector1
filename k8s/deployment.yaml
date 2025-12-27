@@ -31,8 +31,8 @@ spec:
                 name: detection-app-secrets
                 key: MQTT_PASSWORD
         resources:
-          limits:
-            nvidia.com/gpu: "1"  # Optional GPU request
+          # limits:
+          #   nvidia.com/gpu: "1"  # Optional GPU request
         volumeMounts:
         - mountPath: /data
           name: experiment-data
