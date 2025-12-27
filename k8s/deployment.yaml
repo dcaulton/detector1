@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: detection-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: detection-app
+  template:
+    metadata:
+      labels:
+        app: detection-app
+    spec:
+      containers:
+      - name: app
+        image: yourregistry/detection-app:v1  # From build
+        env:
+          - name: MQTT_BROKER
+            value: "mosquitto.mqtt.svc.cluster.local"
+          - name: MQTT_PORT
+            value: "1883"
+          - name: MQTT_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: detection-app-secrets
+                key: MQTT_USERNAME
+          - name: MQTT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: detection-app-secrets
+                key: MQTT_PASSWORD
+        resources:
+          limits:
+            nvidia.com/gpu: "1"  # Optional GPU request
+        volumeMounts:
+        - mountPath: /data
+          name: data-volume  # For 8TB caches
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: experiment-data-pvc  # Create PVC on 8TB
