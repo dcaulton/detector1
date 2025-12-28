@@ -7,6 +7,8 @@ import cv2
 import numpy as np
 # ... your other imports (e.g., torch, transformers pipe, etc.)
 
+print('detection1 container started baby')
+
 load_dotenv()  # For local dev; in k8s use Secrets
 
 # MLflow setup
