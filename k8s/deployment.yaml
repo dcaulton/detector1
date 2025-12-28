@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: app
-        image: ghcr.io/dcaulton/detection-app:v0.1.1
+        image: ghcr.io/dcaulton/detection-app:latest
         imagePullPolicy: IfNotPresent
         env:
           - name: MQTT_BROKER
