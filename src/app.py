@@ -58,7 +58,12 @@ def on_connect(client, userdata, flags, rc):
         print(f"Connection failed with code {rc}")
 
 def on_message(client, userdata, msg):
-    print(f"Received message on {msg.topic}")
+    print(f"[{datetime.datetime.now()}] >>> RAW MQTT MESSAGE RECEIVED <<<")
+    print(f"Topic: {msg.topic}")
+    print(f"Payload length: {len(msg.payload)} bytes")
+    print(f"Payload type: {type(msg.payload)}")
+    print(f"First 50 bytes (hex): {msg.payload[:50].hex()}")
+    sys.stdout.flush()  # Force it out
     
     with mlflow.start_run(run_name="detection-run"):
         mlflow.log_param("topic", msg.topic)
