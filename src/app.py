@@ -7,7 +7,17 @@ import cv2
 import numpy as np
 # ... your other imports (e.g., torch, transformers pipe, etc.)
 
-print('detection1 container started baby')
+import sys
+import datetime
+
+# Force flush just in case
+sys.stdout.flush()
+
+print(f"[{datetime.datetime.now()}] >>> DETECTION1 CONTAINER STARTED <<<")
+print(f"[{datetime.datetime.now()}] Python version: {sys.version}")
+print(f"[{datetime.datetime.now()}] Attempting MQTT connection to mosquitto.mqtt.svc.cluster.local:1883...")
+sys.stdout.flush()
+
 
 load_dotenv()  # For local dev; in k8s use Secrets
 
