@@ -32,6 +32,7 @@ MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
 MQTT_USER = os.getenv("MQTT_USER")
 MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
 MQTT_TOPIC = "frigate/#"
+#MQTT_TOPIC = "frigate/+/snapshot"
 
 # Your inference pipeline (example placeholder)
 # pipe = SomeModel(...)
@@ -65,6 +66,9 @@ def on_message(client, userdata, msg):
     print(f"First 50 bytes (hex): {msg.payload[:50].hex()}")
     sys.stdout.flush()  # Force it out
     
+    if not msg.topic.endswith('snapshot'):
+        return
+
     with mlflow.start_run(run_name="detection-run"):
         mlflow.log_param("topic", msg.topic)
         mlflow.log_param("prompt", "cyberpunk style")  # or dynamic
