@@ -70,7 +70,7 @@ def process_image(image_bytes: bytes):
     cv2.imwrite(generated_path, img)
     
     end_time = time.perf_counter()
-    inference_time = (end_time - start_time) / 1000
+    inference_time = ((end_time - start_time) * 1000).round(1)
     return inference_time, generated_path
 
 def on_connect(client, userdata, flags, rc):
