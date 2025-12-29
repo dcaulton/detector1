@@ -70,7 +70,7 @@ def process_image(image_bytes: bytes):
     cv2.imwrite(generated_path, img)
     
     end_time = time.perf_counter()
-    inference_time = start_time - end_time
+    inference_time = (end_time - start_time) // 1000
     return inference_time, generated_path
 
 def on_connect(client, userdata, flags, rc):
@@ -88,7 +88,6 @@ def on_message(client, userdata, msg):
     print(f"Payload length: {len(msg.payload)} bytes")
     print(f"Payload type: {type(msg.payload)}")
     print(f"First 50 bytes (hex): {msg.payload[:50].hex()}")
-    check_gpu()
     sys.stdout.flush()  # Force it out
     
     if not msg.topic.endswith('snapshot'):
