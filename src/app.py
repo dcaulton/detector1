@@ -1,25 +1,22 @@
-print("YO getting started babe")
 import os
+import time
 import mlflow
 import paho.mqtt.client as mqtt
 from dotenv import load_dotenv
-import base64  # if snapshots come base64-encoded in events topic
+import base64 
 import cv2
 import numpy as np
 import torch
-# ... your other imports (e.g., torch, transformers pipe, etc.)
-
+import torch.nn.functional as F
 import sys
 import datetime
 
 # Force flush just in case
 sys.stdout.flush()
-
 print(f"[{datetime.datetime.now()}] >>> DETECTION1 CONTAINER STARTED <<<")
 print(f"[{datetime.datetime.now()}] Python version: {sys.version}")
 print(f"[{datetime.datetime.now()}] Attempting MQTT connection to mosquitto.mqtt.svc.cluster.local:1883...")
 sys.stdout.flush()
-
 
 load_dotenv()  # For local dev; in k8s use Secrets
 
@@ -54,16 +51,26 @@ def check_gpu():
     sys.stdout.flush()
 
 def process_image(image_bytes: bytes):
-    """Run your CV / gen / TTS pipeline here."""
+    start_time = time.perf_counter()
     # Decode JPEG
     nparr = np.frombuffer(image_bytes, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     
-    # ... your inference: generated_img, text, audio, etc.
-    inference_time = 12.5  # replace with actual timing
+    # Convert numpy to torch tensor on GPU
+    tensor = torch.from_numpy(img).permute(2, 0, 1).float().unsqueeze(0).cuda() / 255.0
+
+    # Example GPU ops: resize + gaussian blur (you can chain more)
+    tensor = F.interpolate(tensor, size=(640, 640), mode='bilinear', align_corners=False)
+    tensor = F.avg_pool2d(tensor, kernel_size=5, stride=1, padding=2)  # Approx blur
+
+    # Back to numpy for saving/MLflow
+    processed_img = (tensor.squeeze(0).permute(1, 2, 0).cpu().numpy() * 255).astype(np.uint8)
+
     generated_path = "/data/generated.jpg"  # PVC mount
-    cv2.imwrite(generated_path, img)  # example artifact
+    cv2.imwrite(generated_path, img)
     
+    end_time = time.perf_counter()
+    inference_time = start_time - end_time
     return inference_time, generated_path
 
 def on_connect(client, userdata, flags, rc):
@@ -73,6 +80,7 @@ def on_connect(client, userdata, flags, rc):
         print(f"Subscribed to {MQTT_TOPIC}")
     else:
         print(f"Connection failed with code {rc}")
+    check_gpu()
 
 def on_message(client, userdata, msg):
     print(f"[{datetime.datetime.now()}] >>> RAW MQTT MESSAGE RECEIVED <<<")
