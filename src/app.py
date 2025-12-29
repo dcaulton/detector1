@@ -32,7 +32,6 @@ MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
 MQTT_USER = os.getenv("MQTT_USER")
 MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
 MQTT_TOPIC = "frigate/#"
-#MQTT_TOPIC = "frigate/+/snapshot"  # Wildcard: catches all camera snapshots (e.g., frigate/front_door/person/snapshot)
 
 # Your inference pipeline (example placeholder)
 # pipe = SomeModel(...)
