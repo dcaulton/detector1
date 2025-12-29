@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import base64  # if snapshots come base64-encoded in events topic
 import cv2
 import numpy as np
+import torch
 # ... your other imports (e.g., torch, transformers pipe, etc.)
 
 import sys
@@ -36,6 +37,21 @@ MQTT_TOPIC = "frigate/#"
 
 # Your inference pipeline (example placeholder)
 # pipe = SomeModel(...)
+
+def check_gpu():
+    print(f"[{datetime.datetime.now()}] GPU TEST START")
+    if torch.cuda.is_available():
+        print(f"CUDA available! Device: {torch.cuda.get_device_name(0)}")
+        # Simple GPU op: matrix multiply
+        a = torch.randn(1000, 1000, device='cuda')
+        b = torch.randn(1000, 1000, device='cuda')
+        c = torch.matmul(a, b)
+        print(f"GPU matmul result sample: {c[0][0].item():.2f}")
+        torch.cuda.synchronize()  # Ensure completion
+    else:
+        print("No CUDA – falling back to CPU")
+    print(f"[{datetime.datetime.now()}] GPU TEST END")
+    sys.stdout.flush()
 
 def process_image(image_bytes: bytes):
     """Run your CV / gen / TTS pipeline here."""
