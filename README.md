@@ -11,6 +11,8 @@ This is intended to be a template.  It runs cleanly in the my homelab setup (min
 
 To make a new project based on this one:
 1. Fork the project with a good name, maybe detector2-yolo
-2. Update k8s/deployment.yaml - set replicas to 1 to enable the project 
-3. In the Homelab repo, make a new folder in apps, with an appliction.yaml like that for detection1
-4. Resync Homelab in ArgoCD
+2. Make a new namespace, eg detection2
+3. Update k8s/deployment.yaml - set replicas to 1 to enable the project 
+4. Update k8s files otherwise, set all detection1 to detection2
+5. In the Homelab repo, make a new folder in apps, with an appliction.yaml like that for detection1
+6. Resync Homelab in ArgoCD
