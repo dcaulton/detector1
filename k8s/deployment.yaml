@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: detection-app
+  name: detection1
 spec:
   replicas: 1   # set to 0 to disable
   selector:
     matchLabels:
-      app: detection-app
+      app: detection1
   template:
     metadata:
       labels:
-        app: detection-app
+        app: detection1
     spec:
       containers:
       - name: app
