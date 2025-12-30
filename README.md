@@ -10,9 +10,17 @@ This is intended to be a template.  It runs cleanly in the my homelab setup (min
 - saves resulting image, logs it to MLFlow
 
 To make a new project based on this one:
-1. Fork the project with a good name, maybe detector2-yolo
-2. Make a new namespace, eg detection2
-3. Update k8s/deployment.yaml - set replicas to 1 to enable the project 
-4. Update k8s files otherwise, set all detection1 to detection2
-5. In the Homelab repo, make a new folder in apps, with an appliction.yaml like that for detection1
-6. Resync Homelab in ArgoCD
+- Fork the project with a good name, maybe detector2-yolo
+- Make a new namespace, eg detection2
+- copy the secrets (MQTT creds for now) to the new namespace *
+- Update k8s/deployment.yaml - set replicas to 1 to enable the project 
+- Update k8s files otherwise, set all detection1 to detection2
+- In the Homelab repo, make a new folder in apps, with an appliction.yaml like that for detection1
+- Resync Homelab in ArgoCD
+
+
+heres how to copy the secrets:
+kubectl get secret detection-app-secrets -n detection1 -o yaml \
+  | sed 's/namespace: detection1/namespace: detection2/' \
+  | kubectl apply -f -
+
