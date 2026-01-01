@@ -105,6 +105,8 @@ def on_message(client, userdata, msg):
         
         inference_time, artifact_path = process_image(image_bytes)
         
+        # uncomment below, then run this to step through: kubectl exec -it detection2-bdf99b996-kj6cx -n detection2 -- python -m pdb /app/app.py
+        # import pdb; pdb.set_trace()
         mlflow.log_metric("inference_time", inference_time)
         mlflow.log_artifact(artifact_path)
         
