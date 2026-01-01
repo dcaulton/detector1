@@ -1,7 +1,5 @@
 import os
-os.environ["MLFLOW_VERBOSE"] = "1"
 import time
-import mlflow
 import paho.mqtt.client as mqtt
 from dotenv import load_dotenv
 import base64 
@@ -11,6 +9,7 @@ import torch
 import torch.nn.functional as F
 import sys
 import datetime
+import logging
 
 # Force flush just in case
 sys.stdout.flush()
@@ -22,6 +21,11 @@ sys.stdout.flush()
 load_dotenv()  # For local dev; in k8s use Secrets
 
 # MLflow setup
+logger = logging.getLogger("mlflow")
+logger.setLevel(logging.DEBUG)
+logging.getLogger("requests").setLevel(logging.DEBUG)
+logging.getLogger("urllib3").setLevel(logging.DEBUG)
+import mlflow
 mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "http://mlflow-service.mlflow.svc.cluster.local:5000"))
 mlflow.set_experiment("detection-experiments")
 
