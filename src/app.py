@@ -1,4 +1,5 @@
 import os
+os.environ["MLFLOW_VERBOSE"] = "1"
 import time
 import mlflow
 import paho.mqtt.client as mqtt
