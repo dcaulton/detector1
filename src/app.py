@@ -115,7 +115,6 @@ def on_message(client, userdata, msg):
 
     with mlflow.start_run(run_name="detection-run"):
         mlflow.log_param("topic", msg.topic)
-        mlflow.log_param("prompt", "cyberpunk style")  # or dynamic
         
         # Handle payload: raw JPEG on snapshot topics
         image_bytes = msg.payload
@@ -130,6 +129,7 @@ def on_message(client, userdata, msg):
         mlflow.log_metric("inference_time", inference_time)
         mlflow.log_artifact(artifact_path)
         
+        mlflow.log_param("prompt", "miskatonic style")  # or dynamic
         # Optional: trigger downstream actions (e.g., publish result back to MQTT)
 
 # Create and configure the client
