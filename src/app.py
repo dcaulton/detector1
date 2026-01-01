@@ -10,9 +10,8 @@ import torch.nn.functional as F
 import sys
 import datetime
 import logging
+import mlflow
 
-# Force flush just in case
-sys.stdout.flush()
 print(f"[{datetime.datetime.now()}] >>> DETECTION1 CONTAINER STARTED <<<")
 print(f"[{datetime.datetime.now()}] Python version: {sys.version}")
 print(f"[{datetime.datetime.now()}] Attempting MQTT connection to mosquitto.mqtt.svc.cluster.local:1883...")
@@ -20,27 +19,6 @@ sys.stdout.flush()
 
 load_dotenv()  # For local dev; in k8s use Secrets
 
-# Get the mlflow logger and lower its level
-mlflow_logger = logging.getLogger("mlflow")
-mlflow_logger.setLevel(logging.DEBUG)
-
-# Also lower levels for underlying HTTP libs (very useful for seeing upload attempts)
-logging.getLogger("urllib3").setLevel(logging.DEBUG)
-logging.getLogger("requests").setLevel(logging.DEBUG)
-
-# Ensure there's a handler that outputs to stdout (kubectl logs captures this)
-# Add a StreamHandler if none exists (avoids duplicate handlers on re-imports)
-if not mlflow_logger.handlers:
-    handler = logging.StreamHandler()
-    handler.setLevel(logging.DEBUG)  # Handler must also allow DEBUG
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
-    mlflow_logger.addHandler(handler)
-    # Optionally add to root logger too for broader visibility
-    logging.getLogger().addHandler(handler)
-    logging.getLogger().setLevel(logging.DEBUG)
-
-import mlflow
 mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "http://mlflow-service.mlflow.svc.cluster.local:5000"))
 mlflow.set_experiment("detection1-20250101a")
 
@@ -50,10 +28,6 @@ MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
 MQTT_USER = os.getenv("MQTT_USER")
 MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
 MQTT_TOPIC = "frigate/#"
-#MQTT_TOPIC = "frigate/+/snapshot"
-
-# Your inference pipeline (example placeholder)
-# pipe = SomeModel(...)
 
 def check_gpu():
     print(f"[{datetime.datetime.now()}] GPU TEST START")
@@ -103,12 +77,9 @@ def on_connect(client, userdata, flags, rc):
     check_gpu()
 
 def on_message(client, userdata, msg):
-    print(f"[{datetime.datetime.now()}] >>> RAW MQTT MESSAGE RECEIVED <<<")
-    print(f"Topic: {msg.topic}")
-    print(f"Payload length: {len(msg.payload)} bytes")
-    print(f"Payload type: {type(msg.payload)}")
-    print(f"First 50 bytes (hex): {msg.payload[:50].hex()}")
-    sys.stdout.flush()  # Force it out
+    print(f"[{datetime.datetime.now()}] >>> RAW MQTT MESSAGE RECEIVED on topic {msg.topic} <<<")
+    print(f"    Payload length: {len(msg.payload)} bytes, Payload type: {type(msg.payload)}, First 50 bytes (hex): {msg.payload[:50].hex()}")
+    sys.stdout.flush()
     
     if not msg.topic.endswith('snapshot'):
         return
