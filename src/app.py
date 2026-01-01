@@ -20,7 +20,7 @@ sys.stdout.flush()
 load_dotenv()  # For local dev; in k8s use Secrets
 
 mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "http://mlflow-service.mlflow.svc.cluster.local:5000"))
-mlflow.set_experiment("detection1-20250101a")
+mlflow.set_experiment("detection1")
 
 # MQTT credentials (from Secrets in k8s)
 MQTT_BROKER = os.getenv("MQTT_BROKER", "mqtt-broker.default.svc.cluster.local")  # adjust to your broker service
@@ -84,7 +84,7 @@ def on_message(client, userdata, msg):
     if not msg.topic.endswith('snapshot'):
         return
 
-    with mlflow.start_run(run_name="detection-run"):
+    with mlflow.start_run(run_name="detection1-aa"):
         mlflow.log_param("topic", msg.topic)
         
         # Handle payload: raw JPEG on snapshot topics
