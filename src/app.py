@@ -42,7 +42,7 @@ if not mlflow_logger.handlers:
 
 import mlflow
 mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "http://mlflow-service.mlflow.svc.cluster.local:5000"))
-mlflow.set_experiment("detection-experiments")
+mlflow.set_experiment("detection1-20250101a")
 
 # MQTT credentials (from Secrets in k8s)
 MQTT_BROKER = os.getenv("MQTT_BROKER", "mqtt-broker.default.svc.cluster.local")  # adjust to your broker service
