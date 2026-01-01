@@ -20,11 +20,26 @@ sys.stdout.flush()
 
 load_dotenv()  # For local dev; in k8s use Secrets
 
-# MLflow setup
-logger = logging.getLogger("mlflow")
-logger.setLevel(logging.DEBUG)
-logging.getLogger("requests").setLevel(logging.DEBUG)
+# Get the mlflow logger and lower its level
+mlflow_logger = logging.getLogger("mlflow")
+mlflow_logger.setLevel(logging.DEBUG)
+
+# Also lower levels for underlying HTTP libs (very useful for seeing upload attempts)
 logging.getLogger("urllib3").setLevel(logging.DEBUG)
+logging.getLogger("requests").setLevel(logging.DEBUG)
+
+# Ensure there's a handler that outputs to stdout (kubectl logs captures this)
+# Add a StreamHandler if none exists (avoids duplicate handlers on re-imports)
+if not mlflow_logger.handlers:
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.DEBUG)  # Handler must also allow DEBUG
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    mlflow_logger.addHandler(handler)
+    # Optionally add to root logger too for broader visibility
+    logging.getLogger().addHandler(handler)
+    logging.getLogger().setLevel(logging.DEBUG)
+
 import mlflow
 mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "http://mlflow-service.mlflow.svc.cluster.local:5000"))
 mlflow.set_experiment("detection-experiments")
